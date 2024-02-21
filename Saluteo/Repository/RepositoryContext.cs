@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Linq.Expressions;
 
+    // GenericRepository : IGenericRepository
     public class RepositoryContext<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private readonly ApplicationContext _dbContext;
