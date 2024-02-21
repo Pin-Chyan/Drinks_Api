@@ -21,6 +21,7 @@
         public ActionResult<IEnumerable<Branch>> GetAllBranch()
         {
             // questionable
+            // make into service use service to populate the nav props if needed
             var branches = _branchRepository.GetAll()
                 .Include(_ => _.Company)
                     .ThenInclude(_ => _.CompanyCategory)
