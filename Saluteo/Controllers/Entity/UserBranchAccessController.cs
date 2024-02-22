@@ -9,9 +9,9 @@
     [ApiController]
     public class UserBranchAccessController : ControllerBase
     {
-        private readonly IRepository<UserBranchAccess> _userBranchAccessRepository;
+        private readonly IGenericRepository<UserBranchAccess> _userBranchAccessRepository;
 
-        public UserBranchAccessController(IRepository<UserBranchAccess> userBranchAccessRepository)
+        public UserBranchAccessController(IGenericRepository<UserBranchAccess> userBranchAccessRepository)
         {
             _userBranchAccessRepository = userBranchAccessRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<UserBranchAccess>> GetAllCompanies()
         {
-            var userBranchAccesses = _userBranchAccessRepository.GetAll().ToList();
+            var userBranchAccesses = _userBranchAccessRepository.GetAllAsync();
             return Ok(userBranchAccesses);
         }
 
@@ -40,7 +40,7 @@
                 SecurityAccessCodeId = userBranchAccessDto.SecurityAccessCodeId
             };
 
-            _userBranchAccessRepository.Insert(userBranchAccess);
+            _userBranchAccessRepository.InsertAsync(userBranchAccess);
 
             return Ok(userBranchAccess);
         }

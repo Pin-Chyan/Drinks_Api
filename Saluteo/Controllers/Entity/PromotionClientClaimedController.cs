@@ -9,9 +9,9 @@
     [ApiController]
     public class PromotionClientClaimedController : ControllerBase
     {
-        private readonly IRepository<PromotionClientClaimed> _promotionClientClaimedRepository;
+        private readonly IGenericRepository<PromotionClientClaimed> _promotionClientClaimedRepository;
 
-        public PromotionClientClaimedController(IRepository<PromotionClientClaimed> promotionClientClaimedRepository)
+        public PromotionClientClaimedController(IGenericRepository<PromotionClientClaimed> promotionClientClaimedRepository)
         {
             _promotionClientClaimedRepository = promotionClientClaimedRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<PromotionClientClaimed>> GetAllPromotionClientClaims()
         {
-            var claimedItems = _promotionClientClaimedRepository.GetAll().ToList();
+            var claimedItems = _promotionClientClaimedRepository.GetAllAsync();
             return Ok(claimedItems);
         }
 
@@ -38,7 +38,7 @@
                 ClientId = promotionClientClaimedDto.ClientId
             };
 
-            _promotionClientClaimedRepository.Insert(promotionClientClaimed);
+            _promotionClientClaimedRepository.InsertAsync(promotionClientClaimed);
 
             return Ok(promotionClientClaimed);
         }

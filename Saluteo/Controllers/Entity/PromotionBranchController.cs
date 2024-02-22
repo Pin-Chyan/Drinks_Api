@@ -9,9 +9,9 @@
     [ApiController]
     public class PromotionBranchController : ControllerBase
     {
-        private readonly IRepository<PromotionBranch> _promotionBranchRepository;
+        private readonly IGenericRepository<PromotionBranch> _promotionBranchRepository;
 
-        public PromotionBranchController(IRepository<PromotionBranch> promotionBranchRepository)
+        public PromotionBranchController(IGenericRepository<PromotionBranch> promotionBranchRepository)
         {
             _promotionBranchRepository = promotionBranchRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<Promotion>> GetAllPromotionBranches()
         {
-            var promotionsBranches = _promotionBranchRepository.GetAll().ToList();
+            var promotionsBranches = _promotionBranchRepository.GetAllAsync();
             return Ok(promotionsBranches);
         }
 
@@ -38,7 +38,7 @@
                 PromotionId = promotionBranchDto.PromotionId
             };
 
-            _promotionBranchRepository.Insert(promotionBranch);
+            _promotionBranchRepository.InsertAsync(promotionBranch);
 
             return Ok(promotionBranch);
         }

@@ -9,9 +9,9 @@
     [ApiController]
     public class PromotionProductController : ControllerBase
     {
-        private readonly IRepository<PromotionProduct> _promotionProductRepository;
+        private readonly IGenericRepository<PromotionProduct> _promotionProductRepository;
 
-        public PromotionProductController(IRepository<PromotionProduct> promotionProductRepository)
+        public PromotionProductController(IGenericRepository<PromotionProduct> promotionProductRepository)
         {
             _promotionProductRepository = promotionProductRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<PromotionProduct>> GetAllPromotionProducts()
         {
-            var promotionProducts = _promotionProductRepository.GetAll().ToList();
+            var promotionProducts = _promotionProductRepository.GetAllAsync();
             return Ok(promotionProducts);
         }
 
@@ -38,7 +38,7 @@
                 ProductId = promotionProductDto.ProductId
             };
 
-            _promotionProductRepository.Insert(promotionProduct);
+            _promotionProductRepository.InsertAsync(promotionProduct);
 
             return Ok(promotionProduct);
         }

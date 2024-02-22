@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumSecurityAccessCodeController : ControllerBase
     {
-        private readonly IRepository<EnumSecurityAccessCode> _enumSecurityAccessCodeRepository;
+        private readonly IGenericRepository<EnumSecurityAccessCode> _enumSecurityAccessCodeRepository;
 
-        public EnumSecurityAccessCodeController(IRepository<EnumSecurityAccessCode> enumSecurityAccessCodeRepository)
+        public EnumSecurityAccessCodeController(IGenericRepository<EnumSecurityAccessCode> enumSecurityAccessCodeRepository)
         {
             _enumSecurityAccessCodeRepository = enumSecurityAccessCodeRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumSecurityAccessCode>> GetAllEnumSecurityAccessCode()
         {
-            var enumSecurityAccessCode = _enumSecurityAccessCodeRepository.GetAll().ToList();
+            var enumSecurityAccessCode = _enumSecurityAccessCodeRepository.GetAllAsync();
             return Ok(enumSecurityAccessCode);
         }
     }

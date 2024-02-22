@@ -1,78 +1,69 @@
 ﻿namespace Saluteo.Controllers.Entity
 {
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     using Saluteo.Models.Entity;
     using Saluteo.Repository;
+    using Saluteo.Services;
 
     [Route("api/[controller]")]
     [ApiController]
     public class BranchController : ControllerBase
     {
-        private readonly IRepository<Branch> _branchRepository;
+        private readonly IGenericRepository<Branch> _branchRepository;
+        private readonly BranchService _branchService;
 
-        public BranchController(IRepository<Branch> branchRepository)
+        public BranchController(IGenericRepository<Branch> branchRepository, BranchService branchService)
         {
             _branchRepository = branchRepository;
+            _branchService = branchService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Branch>> GetAllBranch()
+        public async Task<ActionResult<IEnumerable<Branch>>> GetAllBranch()
         {
-            // questionable
-            // make into service use service to populate the nav props if needed
-            var branches = _branchRepository.GetAll()
-                .Include(_ => _.Company)
-                    .ThenInclude(_ => _.CompanyCategory)
-                .Include(_ => _.Location)
-                    .ThenInclude(_ => _.Region)
-                        .ThenInclude(_ => _.Country)
-                .ToList();
+            var branches = await _branchService.GetAllBranchesAsync();
 
             return Ok(branches);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Branch> GetBranchById(long id)
+        public async Task<ActionResult<Branch>> GetBranchById(long id)
         {
-            var branch = _branchRepository.GetById(id);
+            var branch = await _branchService.GetBranchByIdAsync(id);
 
             if (branch == null)
             {
                 return NotFound();
             }
 
-            _branchRepository.LoadNavigationProperties(
-                b => b.Company,
-                b => b.Company.CompanyCategory,
-                b => b.Location,
-                b => b.Location.Region,
-                b => b.Location.Region.Country
-            );
-
             return Ok(branch);
         }
 
         [HttpPost]
-        public ActionResult CreateBranch([FromBody] BranchDto branchDto)
+        public async Task<ActionResult<Branch>> CreateBranch([FromBody] BranchDto branchDto)
         {
-            if (branchDto == null)
+            var createdBranch = await _branchService.CreateBranchAsync(branchDto);
+
+            if (createdBranch == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var branch = new Branch
+            return Ok(createdBranch);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Branch>> UpdateBranch(long id, [FromBody] BranchDto updatedBranchDto)
+        {
+            var updatedBranch = await _branchService.UpdateBranchAsync(id, updatedBranchDto);
+
+            if (updatedBranch == null)
             {
-                BranchName = branchDto.BranchName,
-                CompanyId = branchDto.CompanyId,
-                LocationId = branchDto.LocationId,
-            };
+                return NotFound();
+            }
 
-            _branchRepository.Insert(branch);
-
-            return Ok(branch);
+            return Ok(updatedBranch);
         }
     }
 }

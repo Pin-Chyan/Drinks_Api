@@ -9,9 +9,9 @@
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IRepository<User> _userRepository;
+        private readonly IGenericRepository<User> _userRepository;
 
-        public UserController(IRepository<User> userRepository)
+        public UserController(IGenericRepository<User> userRepository)
         {
             _userRepository = userRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<User>> GetAllUsers()
         {
-            var users = _userRepository.GetAll().ToList();
+            var users = _userRepository.GetAllAsync();
             return Ok(users);
         }
 
@@ -40,7 +40,7 @@
                 Password = userDto.Password
             };
 
-            _userRepository.Insert(user);
+            _userRepository.InsertAsync(user);
 
             return Ok(user);
         }

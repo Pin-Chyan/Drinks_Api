@@ -9,9 +9,9 @@
     [ApiController]
     public class ReviewConfigurationsController : ControllerBase
     {
-        private readonly IRepository<ReviewConfiguration> _reviewConfigurationRepository;
+        private readonly IGenericRepository<ReviewConfiguration> _reviewConfigurationRepository;
 
-        public ReviewConfigurationsController(IRepository<ReviewConfiguration> reviewConfigurationRepository)
+        public ReviewConfigurationsController(IGenericRepository<ReviewConfiguration> reviewConfigurationRepository)
         {
             _reviewConfigurationRepository = reviewConfigurationRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<ReviewConfiguration>> GetAllReviewConfigurations()
         {
-            var reviewConfiguration = _reviewConfigurationRepository.GetAll().ToList();
+            var reviewConfiguration = _reviewConfigurationRepository.GetAllAsync();
             return Ok(reviewConfiguration);
         }
 
@@ -38,7 +38,7 @@
                 ReviewTypeId = reviewConfigurationDto.ReviewTypeId
             };
 
-            _reviewConfigurationRepository.Insert(reviewConfiguration);
+            _reviewConfigurationRepository.InsertAsync(reviewConfiguration);
 
             return Ok(reviewConfiguration);
         }

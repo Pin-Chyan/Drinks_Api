@@ -9,9 +9,9 @@
     [ApiController]
     public class LocationController : ControllerBase
     {
-        private readonly IRepository<Location> _locationRepository;
+        private readonly IGenericRepository<Location> _locationRepository;
 
-        public LocationController(IRepository<Location> locationRepository)
+        public LocationController(IGenericRepository<Location> locationRepository)
         {
             _locationRepository = locationRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<Location>> GetAllLocations()
         {
-            var locations = _locationRepository.GetAll().ToList();
+            var locations = _locationRepository.GetAllAsync();
             return Ok(locations);
         }
 
@@ -39,7 +39,7 @@
                 RegionId = locationDto.RegionId,
             };
 
-            _locationRepository.Insert(location);
+            _locationRepository.InsertAsync(location);
 
             return Ok(location);
         }

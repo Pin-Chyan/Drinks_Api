@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumRecurringTypeController : ControllerBase
     {
-        private readonly IRepository<EnumRecurringType> _enumRecurringTypeRepository;
+        private readonly IGenericRepository<EnumRecurringType> _enumRecurringTypeRepository;
 
-        public EnumRecurringTypeController(IRepository<EnumRecurringType> enumRecurringTypeRepository)
+        public EnumRecurringTypeController(IGenericRepository<EnumRecurringType> enumRecurringTypeRepository)
         {
             _enumRecurringTypeRepository = enumRecurringTypeRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumRecurringType>> GetAllEnumRecurringType()
         {
-            var enumRecurringType = _enumRecurringTypeRepository.GetAll().ToList();
+            var enumRecurringType = _enumRecurringTypeRepository.GetAllAsync();
             return Ok(enumRecurringType);
         }
     }

@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumValueTypeController : ControllerBase
     {
-        private readonly IRepository<EnumValueType> _enumValueTypeRepository;
+        private readonly IGenericRepository<EnumValueType> _enumValueTypeRepository;
 
-        public EnumValueTypeController(IRepository<EnumValueType> enumValueTypeRepository)
+        public EnumValueTypeController(IGenericRepository<EnumValueType> enumValueTypeRepository)
         {
             _enumValueTypeRepository = enumValueTypeRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumValueType>> GetAllEnumValueType()
         {
-            var enumValueType = _enumValueTypeRepository.GetAll().ToList();
+            var enumValueType = _enumValueTypeRepository.GetAllAsync();
             return Ok(enumValueType);
         }
     }

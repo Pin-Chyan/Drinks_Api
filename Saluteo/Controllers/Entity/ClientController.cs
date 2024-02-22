@@ -9,9 +9,9 @@
     [ApiController]
     public class ClientController : ControllerBase
     {
-        private readonly IRepository<Client> _clientRepository;
+        private readonly IGenericRepository<Client> _clientRepository;
 
-        public ClientController(IRepository<Client> clientRepository)
+        public ClientController(IGenericRepository<Client> clientRepository)
         {
             _clientRepository = clientRepository;
         }
@@ -19,9 +19,11 @@
         [HttpGet]
         public ActionResult<IEnumerable<Client>> GetAllClients()
         {
-            var clients = _clientRepository.GetAll().ToList();
+            var clients = _clientRepository.GetAllAsync();
+
             return Ok(clients);
         }
+
 
         [HttpPost]
         public ActionResult CreateClient([FromBody] ClientDto clientDto)
@@ -42,7 +44,7 @@
                 Password = clientDto.Password
             };
 
-            _clientRepository.Insert(client);
+            _clientRepository.InsertAsync(client);
 
             return Ok(client);
         }

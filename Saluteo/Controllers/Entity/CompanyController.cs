@@ -10,9 +10,9 @@
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private readonly IRepository<Company> _companyRepository;
+        private readonly IGenericRepository<Company> _companyRepository;
 
-        public CompanyController(IRepository<Company> companyRepository)
+        public CompanyController(IGenericRepository<Company> companyRepository)
         {
             _companyRepository = companyRepository;
         }
@@ -20,9 +20,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<Company>> GetAllCompanies()
         {
-            var companies = _companyRepository.GetAll()
-                .Include(_ => _.CompanyCategory)
-                .ToList();
+            var companies = _companyRepository.GetAllAsync();
 
             return Ok(companies);
         }
@@ -30,14 +28,14 @@
         [HttpGet("{id}")]
         public ActionResult<Company> GetCompanyById(long id)
         {
-            var company = _companyRepository.GetById(id);
+            var company = _companyRepository.GetByIdAsync(id);
 
             if (company == null)
             {
                 return NotFound();
             }
 
-            _companyRepository.LoadNavigationProperties(c => c.CompanyCategory);
+            _companyRepository.LoadNavigationPropertiesAsync(c => c.CompanyCategory);
 
             return Ok(company);
         }
@@ -57,21 +55,21 @@
                 CompanyCategoryId = companyDto.CompanyCategoryId
             };
 
-            _companyRepository.Insert(company);
-            _companyRepository.LoadNavigationProperties(c => c.CompanyCategory);
+            _companyRepository.InsertAsync(company);
+            _companyRepository.LoadNavigationPropertiesAsync(c => c.CompanyCategory);
 
             return Ok(company);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateCompany(long id, [FromBody] CompanyDto updatedCompanyDto)
+        public async Task<ActionResult> UpdateCompany(long id, [FromBody] CompanyDto updatedCompanyDto)
         {
             if (updatedCompanyDto == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            var existingCompany = _companyRepository.GetById(id);
+            var existingCompany = await _companyRepository.GetByIdAsync(id);
 
             if (existingCompany == null)
             {
@@ -82,8 +80,8 @@
             existingCompany.CompanyName = updatedCompanyDto.CompanyName;
             existingCompany.CompanyCategoryId = updatedCompanyDto.CompanyCategoryId;
 
-            _companyRepository.Update(existingCompany);
-            _companyRepository.LoadNavigationProperties(c => c.CompanyCategory);
+            await _companyRepository.UpdateAsync(existingCompany);
+            await _companyRepository.LoadNavigationPropertiesAsync(c => c.CompanyCategory);
 
             return Ok(existingCompany);
         }

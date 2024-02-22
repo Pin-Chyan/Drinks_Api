@@ -9,9 +9,9 @@
     [ApiController]
     public class PromotionPeriodController : ControllerBase
     {
-        private readonly IRepository<PromotionPeriod> _promotionPeriodRepository;
+        private readonly IGenericRepository<PromotionPeriod> _promotionPeriodRepository;
 
-        public PromotionPeriodController(IRepository<PromotionPeriod> promotionPeriodRepository)
+        public PromotionPeriodController(IGenericRepository<PromotionPeriod> promotionPeriodRepository)
         {
             _promotionPeriodRepository = promotionPeriodRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<PromotionPeriod>> GetAllPromotionsPeriods()
         {
-            var GetAllPromotionsPeriods = _promotionPeriodRepository.GetAll().ToList();
+            var GetAllPromotionsPeriods = _promotionPeriodRepository.GetAllAsync();
             return Ok(GetAllPromotionsPeriods);
         }
 
@@ -40,7 +40,7 @@
                 endTime = promotionPeriodDto?.endTime,
             };
 
-            _promotionPeriodRepository.Insert(promotionPeriod);
+            _promotionPeriodRepository.InsertAsync(promotionPeriod);
 
             return Ok(promotionPeriod);
         }

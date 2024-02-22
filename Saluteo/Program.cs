@@ -4,6 +4,7 @@ using Saluteo.Models.Enums;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Saluteo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,36 +23,38 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     // Replace "YourConnectionString" with your actual connection string name
 });
 
-// Register Services
 // Entity
-builder.Services.AddScoped<IRepository<Audit>, RepositoryContext<Audit>>();
-builder.Services.AddScoped<IRepository<Branch>, RepositoryContext<Branch>>();
-builder.Services.AddScoped<IRepository<Client>, RepositoryContext<Client>>();
-builder.Services.AddScoped<IRepository<Company>, RepositoryContext<Company>>();
-builder.Services.AddScoped<IRepository<Discount>, RepositoryContext<Discount>>();
-builder.Services.AddScoped<IRepository<Location>, RepositoryContext<Location>>();
-builder.Services.AddScoped<IRepository<Product>, RepositoryContext<Product>>();
-builder.Services.AddScoped<IRepository<Promotion>, RepositoryContext<Promotion>>();
-builder.Services.AddScoped<IRepository<PromotionBranch>, RepositoryContext<PromotionBranch>>();
-builder.Services.AddScoped<IRepository<PromotionClientClaimed>, RepositoryContext<PromotionClientClaimed>>();
-builder.Services.AddScoped<IRepository<PromotionPeriod>, RepositoryContext<PromotionPeriod>>();
-builder.Services.AddScoped<IRepository<PromotionProduct>, RepositoryContext<PromotionProduct>>();
-builder.Services.AddScoped<IRepository<Review>, RepositoryContext<Review>>();
-builder.Services.AddScoped<IRepository<ReviewConfiguration>, RepositoryContext<ReviewConfiguration>>();
-builder.Services.AddScoped<IRepository<User>, RepositoryContext<User>>();
-builder.Services.AddScoped<IRepository<UserBranchAccess>, RepositoryContext<UserBranchAccess>>();
+builder.Services.AddScoped<IGenericRepository<Audit>, GenericRepository<Audit>>();
+builder.Services.AddScoped<IGenericRepository<Branch>, GenericRepository<Branch>>();
+builder.Services.AddScoped<IGenericRepository<Client>, GenericRepository<Client>>();
+builder.Services.AddScoped<IGenericRepository<Company>, GenericRepository<Company>>();
+builder.Services.AddScoped<IGenericRepository<Discount>, GenericRepository<Discount>>();
+builder.Services.AddScoped<IGenericRepository<Location>, GenericRepository<Location>>();
+builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
+builder.Services.AddScoped<IGenericRepository<Promotion>, GenericRepository<Promotion>>();
+builder.Services.AddScoped<IGenericRepository<PromotionBranch>, GenericRepository<PromotionBranch>>();
+builder.Services.AddScoped<IGenericRepository<PromotionClientClaimed>, GenericRepository<PromotionClientClaimed>>();
+builder.Services.AddScoped<IGenericRepository<PromotionPeriod>, GenericRepository<PromotionPeriod>>();
+builder.Services.AddScoped<IGenericRepository<PromotionProduct>, GenericRepository<PromotionProduct>>();
+builder.Services.AddScoped<IGenericRepository<Review>, GenericRepository<Review>>();
+builder.Services.AddScoped<IGenericRepository<ReviewConfiguration>, GenericRepository<ReviewConfiguration>>();
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+builder.Services.AddScoped<IGenericRepository<UserBranchAccess>, GenericRepository<UserBranchAccess>>();
+
+// Services
+builder.Services.AddScoped<BranchService>();
 
 // Enums
-builder.Services.AddScoped<IRepository<EnumCompanyCategory>, RepositoryContext<EnumCompanyCategory>>();
-builder.Services.AddScoped<IRepository<EnumCountry>, RepositoryContext<EnumCountry>>();
-builder.Services.AddScoped<IRepository<EnumCurrency>, RepositoryContext<EnumCurrency>>();
-builder.Services.AddScoped<IRepository<EnumProductCategory>, RepositoryContext<EnumProductCategory>>();
-builder.Services.AddScoped<IRepository<EnumPromotionType>, RepositoryContext<EnumPromotionType>>();
-builder.Services.AddScoped<IRepository<EnumRecurringType>, RepositoryContext<EnumRecurringType>>();
-builder.Services.AddScoped<IRepository<EnumRegion>, RepositoryContext<EnumRegion>>();
-builder.Services.AddScoped<IRepository<EnumReviewType>, RepositoryContext<EnumReviewType>>();
-builder.Services.AddScoped<IRepository<EnumSecurityAccessCode>, RepositoryContext<EnumSecurityAccessCode>>();
-builder.Services.AddScoped<IRepository<EnumValueType>, RepositoryContext<EnumValueType>>();
+builder.Services.AddScoped<IGenericRepository<EnumCompanyCategory>, GenericRepository<EnumCompanyCategory>>();
+builder.Services.AddScoped<IGenericRepository<EnumCountry>, GenericRepository<EnumCountry>>();
+builder.Services.AddScoped<IGenericRepository<EnumCurrency>, GenericRepository<EnumCurrency>>();
+builder.Services.AddScoped<IGenericRepository<EnumProductCategory>, GenericRepository<EnumProductCategory>>();
+builder.Services.AddScoped<IGenericRepository<EnumPromotionType>, GenericRepository<EnumPromotionType>>();
+builder.Services.AddScoped<IGenericRepository<EnumRecurringType>, GenericRepository<EnumRecurringType>>();
+builder.Services.AddScoped<IGenericRepository<EnumRegion>, GenericRepository<EnumRegion>>();
+builder.Services.AddScoped<IGenericRepository<EnumReviewType>, GenericRepository<EnumReviewType>>();
+builder.Services.AddScoped<IGenericRepository<EnumSecurityAccessCode>, GenericRepository<EnumSecurityAccessCode>>();
+builder.Services.AddScoped<IGenericRepository<EnumValueType>, GenericRepository<EnumValueType>>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

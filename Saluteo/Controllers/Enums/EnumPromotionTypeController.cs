@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumPromotionTypeController : ControllerBase
     {
-        private readonly IRepository<EnumPromotionType> _enumPromotionTypeRepository;
+        private readonly IGenericRepository<EnumPromotionType> _enumPromotionTypeRepository;
 
-        public EnumPromotionTypeController(IRepository<EnumPromotionType> enumPromotionTypeRepository)
+        public EnumPromotionTypeController(IGenericRepository<EnumPromotionType> enumPromotionTypeRepository)
         {
             _enumPromotionTypeRepository = enumPromotionTypeRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumPromotionType>> GetAllEnumPromotionType()
         {
-            var enumPromotionType = _enumPromotionTypeRepository.GetAll().ToList();
+            var enumPromotionType = _enumPromotionTypeRepository.GetAllAsync();
             return Ok(enumPromotionType);
         }
     }

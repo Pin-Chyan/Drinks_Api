@@ -9,9 +9,9 @@
     [ApiController]
     public class AuditController : ControllerBase
     {
-        private readonly IRepository<Audit> _auditRepository;
+        private readonly IGenericRepository<Audit> _auditRepository;
 
-        public AuditController(IRepository<Audit> auditRepository)
+        public AuditController(IGenericRepository<Audit> auditRepository)
         {
             _auditRepository = auditRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<Audit>> GetAllAudits()
         {
-            var audits = _auditRepository.GetAll().ToList();
+            var audits = _auditRepository.GetAllAsync();
             return Ok(audits);
         }
     }

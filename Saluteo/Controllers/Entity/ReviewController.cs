@@ -9,9 +9,9 @@
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        private readonly IRepository<Review> _reviewRepository;
+        private readonly IGenericRepository<Review> _reviewRepository;
 
-        public ReviewController(IRepository<Review> reviewRepository)
+        public ReviewController(IGenericRepository<Review> reviewRepository)
         {
             _reviewRepository = reviewRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<Review>> GetAllReviews()
         {
-            var reviews = _reviewRepository.GetAll().ToList();
+            var reviews = _reviewRepository.GetAllAsync();
             return Ok(reviews);
         }
 
@@ -40,7 +40,7 @@
                 ClientId = reviewDto.ClientId
             };
 
-            _reviewRepository.Insert(review);
+            _reviewRepository.InsertAsync(review);
 
             return Ok(review);
         }

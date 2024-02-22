@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumCountryController : ControllerBase
     {
-        private readonly IRepository<EnumCountry> _enumCountryRepository;
+        private readonly IGenericRepository<EnumCountry> _enumCountryRepository;
 
-        public EnumCountryController(IRepository<EnumCountry> enumCountryRepository)
+        public EnumCountryController(IGenericRepository<EnumCountry> enumCountryRepository)
         {
             _enumCountryRepository = enumCountryRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumCountry>> GetAllEnumCountry()
         {
-            var enumCountry = _enumCountryRepository.GetAll().ToList();
+            var enumCountry = _enumCountryRepository.GetAllAsync();
             return Ok(enumCountry);
         }
     }

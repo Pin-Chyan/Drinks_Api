@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumCompanyCategoryController : ControllerBase
     {
-        private readonly IRepository<EnumCompanyCategory> _enumCompanyCategoryRepository;
+        private readonly IGenericRepository<EnumCompanyCategory> _enumCompanyCategoryRepository;
 
-        public EnumCompanyCategoryController(IRepository<EnumCompanyCategory> enumCompanyCategoryRepository)
+        public EnumCompanyCategoryController(IGenericRepository<EnumCompanyCategory> enumCompanyCategoryRepository)
         {
             _enumCompanyCategoryRepository = enumCompanyCategoryRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumCompanyCategory>> GetAllEnumCompanyCategory()
         {
-            var enumCompanyCategory = _enumCompanyCategoryRepository.GetAll().ToList();
+            var enumCompanyCategory = _enumCompanyCategoryRepository.GetAllAsync();
             return Ok(enumCompanyCategory);
         }
     }

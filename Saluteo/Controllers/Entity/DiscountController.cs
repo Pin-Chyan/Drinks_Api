@@ -10,17 +10,18 @@
     [ApiController]
     public class DiscountController : ControllerBase
     {
-        private readonly IRepository<Discount> _discountRepository;
+        private readonly IGenericRepository<Discount> _discountRepository;
 
-        public DiscountController(IRepository<Discount> discountRepository)
+        public DiscountController(IGenericRepository<Discount> discountRepository)
         {
             _discountRepository = discountRepository;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Discount>> GetAllDiscounts()
+        public async Task<ActionResult<IEnumerable<Discount>>> GetAllDiscounts()
         {
-            var discounts = _discountRepository.GetAll().Include(_ => _.ValueType).ToList();
+            var discounts = await _discountRepository.GetAllAsync();
+
             return Ok(discounts);
         }
 
@@ -39,7 +40,7 @@
                 discountAmount = discountDto.discountAmount
             };
 
-            _discountRepository.Insert(discount);
+            _discountRepository.InsertAsync(discount);
 
             return Ok(discount);
         }

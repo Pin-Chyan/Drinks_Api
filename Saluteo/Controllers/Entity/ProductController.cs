@@ -9,9 +9,9 @@
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IRepository<Product> _productRepository;
+        private readonly IGenericRepository<Product> _productRepository;
 
-        public ProductController(IRepository<Product> productRepository)
+        public ProductController(IGenericRepository<Product> productRepository)
         {
             _productRepository = productRepository;
         }
@@ -19,7 +19,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<Product>> GetAllProduct()
         {
-            var products = _productRepository.GetAll().ToList();
+            var products = _productRepository.GetAllAsync();
             return Ok(products);
         }
 
@@ -43,7 +43,7 @@
                 CurrencyId = productDto.CurrencyId,
             };
 
-            _productRepository.Insert(product);
+            _productRepository.InsertAsync(product);
 
             return Ok(product);
         }

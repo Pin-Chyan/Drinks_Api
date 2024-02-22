@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumCurrencyController : ControllerBase
     {
-        private readonly IRepository<EnumCurrency> _enumCurrencyRepository;
+        private readonly IGenericRepository<EnumCurrency> _enumCurrencyRepository;
 
-        public EnumCurrencyController(IRepository<EnumCurrency> enumCurrencyRepository)
+        public EnumCurrencyController(IGenericRepository<EnumCurrency> enumCurrencyRepository)
         {
             _enumCurrencyRepository = enumCurrencyRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumCurrency>> GetAllEnumCurrency()
         {
-            var enumCurrency = _enumCurrencyRepository.GetAll().ToList();
+            var enumCurrency = _enumCurrencyRepository.GetAllAsync();
             return Ok(enumCurrency);
         }
     }

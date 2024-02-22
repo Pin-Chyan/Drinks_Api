@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumProductCategoryController : ControllerBase
     {
-        private readonly IRepository<EnumProductCategory> _enumProductCategoryRepository;
+        private readonly IGenericRepository<EnumProductCategory> _enumProductCategoryRepository;
 
-        public EnumProductCategoryController(IRepository<EnumProductCategory> enumProductCategoryRepository)
+        public EnumProductCategoryController(IGenericRepository<EnumProductCategory> enumProductCategoryRepository)
         {
             _enumProductCategoryRepository = enumProductCategoryRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumProductCategory>> GetAllEnumProductCategory()
         {
-            var enumProductCategory = _enumProductCategoryRepository.GetAll().ToList();
+            var enumProductCategory = _enumProductCategoryRepository.GetAllAsync();
             return Ok(enumProductCategory);
         }
     }

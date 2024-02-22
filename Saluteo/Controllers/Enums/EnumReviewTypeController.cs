@@ -11,9 +11,9 @@
     [ApiController]
     public class EnumReviewTypeController : ControllerBase
     {
-        private readonly IRepository<EnumReviewType> _enumReviewTypeRepository;
+        private readonly IGenericRepository<EnumReviewType> _enumReviewTypeRepository;
 
-        public EnumReviewTypeController(IRepository<EnumReviewType> enumReviewTypeRepository)
+        public EnumReviewTypeController(IGenericRepository<EnumReviewType> enumReviewTypeRepository)
         {
             _enumReviewTypeRepository = enumReviewTypeRepository;
         }
@@ -21,7 +21,7 @@
         [HttpGet]
         public ActionResult<IEnumerable<EnumReviewType>> GetAllEnumReviewType()
         {
-            var enumReviewType = _enumReviewTypeRepository.GetAll().ToList();
+            var enumReviewType = _enumReviewTypeRepository.GetAllAsync();
             return Ok(enumReviewType);
         }
     }
