@@ -3,44 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class PromotionProductController : ControllerBase
     {
-        private readonly IGenericRepository<PromotionProduct> _promotionProductRepository;
+        private readonly PromotionProductService _promotionProductService;
 
-        public PromotionProductController(IGenericRepository<PromotionProduct> promotionProductRepository)
+        public PromotionProductController(PromotionProductService PromotionProductService)
         {
-            _promotionProductRepository = promotionProductRepository;
+            _promotionProductService = PromotionProductService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PromotionProduct>> GetAllPromotionProducts()
+        public async Task<ActionResult<IEnumerable<PromotionProduct>>> GetAllPromotionProducts()
         {
-            var promotionProducts = _promotionProductRepository.GetAllAsync();
-            return Ok(promotionProducts);
+            var PromotionProductPeriods = await _promotionProductService.GetAllPromotionProductsAsync();
+
+            return Ok(PromotionProductPeriods);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PromotionProduct>> GetPromotionProductById(long id)
+        {
+            var promotionProductPeriod = await _promotionProductService.GetPromotionProductByIdAsync(id);
+            if (promotionProductPeriod == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(promotionProductPeriod);
         }
 
         [HttpPost]
-        public ActionResult CreatePromotionProduct([FromBody] PromotionProductDto promotionProductDto)
+        public async Task<ActionResult<PromotionProduct>> CreatePromotionProduct([FromBody] PromotionProductDto promotionProductDto)
         {
-            if (promotionProductDto == null)
+            var createdPromotionProduct = await _promotionProductService.CreatePromotionProductAsync(promotionProductDto);
+            if (createdPromotionProduct == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var promotionProduct = new PromotionProduct
+            return Ok(createdPromotionProduct);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<PromotionProduct>> UpdatePromotionProduct(long id, [FromBody] PromotionProductDto updatedPromotionProductDto)
+        {
+            var updatedPromotionProduct = await _promotionProductService.UpdatePromotionProductAsync(id, updatedPromotionProductDto);
+            if (updatedPromotionProduct == null)
             {
-                PromotionId = promotionProductDto.PromotionId,
-                ProductId = promotionProductDto.ProductId
-            };
+                return NotFound();
+            }
 
-            _promotionProductRepository.InsertAsync(promotionProduct);
+            return Ok(updatedPromotionProduct);
+        }
 
-            return Ok(promotionProduct);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePromotionProduct(long id)
+        {
+            var isDeleted = await _promotionProductService.DeletePromotionProductAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

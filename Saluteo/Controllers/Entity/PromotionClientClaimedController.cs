@@ -3,44 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class PromotionClientClaimedController : ControllerBase
     {
-        private readonly IGenericRepository<PromotionClientClaimed> _promotionClientClaimedRepository;
+        private readonly PromotionClientClaimedService _promotionClientClaimedService;
 
-        public PromotionClientClaimedController(IGenericRepository<PromotionClientClaimed> promotionClientClaimedRepository)
+        public PromotionClientClaimedController(PromotionClientClaimedService promotionClientClaimedService)
         {
-            _promotionClientClaimedRepository = promotionClientClaimedRepository;
+            _promotionClientClaimedService = promotionClientClaimedService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PromotionClientClaimed>> GetAllPromotionClientClaims()
+        public async Task<ActionResult<IEnumerable<PromotionClientClaimed>>> GetAllPromotionClientClaims()
         {
-            var claimedItems = _promotionClientClaimedRepository.GetAllAsync();
+            var claimedItems = await _promotionClientClaimedService.GetAllPromotionClientClaimsAsync();
+
             return Ok(claimedItems);
         }
 
-        [HttpPost]
-        public ActionResult CreatePromotionClientClaimed([FromBody] PromotionClientClaimedDto promotionClientClaimedDto)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PromotionClientClaimed>> GetPromotionClientClaimedById(long id)
         {
-            if (promotionClientClaimedDto == null)
+            var promotionClientClaimed = await _promotionClientClaimedService.GetPromotionClientClaimedByIdAsync(id);
+            if (promotionClientClaimed == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(promotionClientClaimed);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<PromotionClientClaimed>> CreatePromotionClientClaimed([FromBody] PromotionClientClaimedDto promotionClientClaimedDto)
+        {
+            var createdPromotionClientClaimed = await _promotionClientClaimedService.CreatePromotionClientClaimedAsync(promotionClientClaimedDto);
+            if (createdPromotionClientClaimed == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var promotionClientClaimed = new PromotionClientClaimed
+            return Ok(createdPromotionClientClaimed);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<PromotionClientClaimed>> UpdatePromotionClientClaimed(long id, [FromBody] PromotionClientClaimedDto updatedPromotionClientClaimedDto)
+        {
+            var updatedPromotionClientClaimed = await _promotionClientClaimedService.UpdatePromotionClientClaimedAsync(id, updatedPromotionClientClaimedDto);
+            if (updatedPromotionClientClaimed == null)
             {
-                PromotionId = promotionClientClaimedDto.PromotionId,
-                ClientId = promotionClientClaimedDto.ClientId
-            };
+                return NotFound();
+            }
 
-            _promotionClientClaimedRepository.InsertAsync(promotionClientClaimed);
+            return Ok(updatedPromotionClientClaimed);
+        }
 
-            return Ok(promotionClientClaimed);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePromotionClientClaimed(long id)
+        {
+            var isDeleted = await _promotionClientClaimedService.DeletePromotionClientClaimedAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

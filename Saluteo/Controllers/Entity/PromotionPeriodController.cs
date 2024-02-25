@@ -3,46 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class PromotionPeriodController : ControllerBase
     {
-        private readonly IGenericRepository<PromotionPeriod> _promotionPeriodRepository;
+        private readonly PromotionPeriodService _promotionPeriodService;
 
-        public PromotionPeriodController(IGenericRepository<PromotionPeriod> promotionPeriodRepository)
+        public PromotionPeriodController(PromotionPeriodService PromotionPeriodService)
         {
-            _promotionPeriodRepository = promotionPeriodRepository;
+            _promotionPeriodService = PromotionPeriodService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PromotionPeriod>> GetAllPromotionsPeriods()
+        public async Task<ActionResult<IEnumerable<PromotionPeriod>>> GetAllPromotionPeriods()
         {
-            var GetAllPromotionsPeriods = _promotionPeriodRepository.GetAllAsync();
-            return Ok(GetAllPromotionsPeriods);
+            var promotionPeriodPeriods = await _promotionPeriodService.GetAllPromotionPeriodsAsync();
+
+            return Ok(promotionPeriodPeriods);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PromotionPeriod>> GetPromotionPeriodById(long id)
+        {
+            var promotionPeriodPeriod = await _promotionPeriodService.GetPromotionPeriodByIdAsync(id);
+            if (promotionPeriodPeriod == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(promotionPeriodPeriod);
         }
 
         [HttpPost]
-        public ActionResult CreatePromotionPeriod([FromBody] PromotionPeriodDto promotionPeriodDto)
+        public async Task<ActionResult<PromotionPeriod>> CreatePromotionPeriod([FromBody] PromotionPeriodDto promotionPeriodDto)
         {
-            if (promotionPeriodDto == null)
+            var createdPromotionPeriod = await _promotionPeriodService.CreatePromotionPeriodAsync(promotionPeriodDto);
+            if (createdPromotionPeriod == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var promotionPeriod = new PromotionPeriod
+            return Ok(createdPromotionPeriod);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<PromotionPeriod>> UpdatePromotionPeriod(long id, [FromBody] PromotionPeriodDto updatedPromotionPeriodDto)
+        {
+            var updatedPromotionPeriod = await _promotionPeriodService.UpdatePromotionPeriodAsync(id, updatedPromotionPeriodDto);
+            if (updatedPromotionPeriod == null)
             {
-                startDate = promotionPeriodDto.startDate,
-                endDate = promotionPeriodDto.endDate,
-                startTime = promotionPeriodDto?.startTime,
-                endTime = promotionPeriodDto?.endTime,
-            };
+                return NotFound();
+            }
 
-            _promotionPeriodRepository.InsertAsync(promotionPeriod);
+            return Ok(updatedPromotionPeriod);
+        }
 
-            return Ok(promotionPeriod);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePromotionPeriod(long id)
+        {
+            var isDeleted = await _promotionPeriodService.DeletePromotionPeriodAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

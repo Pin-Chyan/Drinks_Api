@@ -1,89 +1,76 @@
 ﻿namespace Saluteo.Controllers.Entity
 {
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private readonly IGenericRepository<Company> _companyRepository;
+        private readonly CompanyService _companyService;
 
-        public CompanyController(IGenericRepository<Company> companyRepository)
+        public CompanyController(CompanyService companyService)
         {
-            _companyRepository = companyRepository;
+            _companyService = companyService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Company>> GetAllCompanies()
+        public async Task<ActionResult<IEnumerable<Company>>> GetAllCompanies()
         {
-            var companies = _companyRepository.GetAllAsync();
+            var companies = await _companyService.GetAllCompaniesAsync();
 
             return Ok(companies);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Company> GetCompanyById(long id)
+        public async Task<ActionResult<Company>> GetCompanyById(long id)
         {
-            var company = _companyRepository.GetByIdAsync(id);
-
+            var company = await _companyService.GetCompanyByIdAsync(id);
             if (company == null)
             {
                 return NotFound();
             }
 
-            _companyRepository.LoadNavigationPropertiesAsync(c => c.CompanyCategory);
-
             return Ok(company);
         }
 
         [HttpPost]
-        public ActionResult CreateCompany([FromBody] CompanyDto companyDto)
+        public async Task<ActionResult<Company>> CreateCompany([FromBody] CompanyDto companyDto)
         {
-            if (companyDto == null)
+            var createdCompany = await _companyService.CreateCompanyAsync(companyDto);
+            if (createdCompany == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var company = new Company
-            {
-                CompanyName = companyDto.CompanyName,
-                CompanyCategoryId = companyDto.CompanyCategoryId
-            };
-
-            _companyRepository.InsertAsync(company);
-            _companyRepository.LoadNavigationPropertiesAsync(c => c.CompanyCategory);
-
-            return Ok(company);
+            return Ok(createdCompany);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateCompany(long id, [FromBody] CompanyDto updatedCompanyDto)
+        public async Task<ActionResult<Company>> UpdateCompany(long id, [FromBody] CompanyDto updatedCompanyDto)
         {
-            if (updatedCompanyDto == null)
-            {
-                return BadRequest("Invalid data");
-            }
-
-            var existingCompany = await _companyRepository.GetByIdAsync(id);
-
-            if (existingCompany == null)
+            var updatedCompany = await _companyService.UpdateCompanyAsync(id, updatedCompanyDto);
+            if (updatedCompany == null)
             {
                 return NotFound();
             }
 
-            // Update properties of the existing entity
-            existingCompany.CompanyName = updatedCompanyDto.CompanyName;
-            existingCompany.CompanyCategoryId = updatedCompanyDto.CompanyCategoryId;
+            return Ok(updatedCompany);
+        }
 
-            await _companyRepository.UpdateAsync(existingCompany);
-            await _companyRepository.LoadNavigationPropertiesAsync(c => c.CompanyCategory);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCompany(long id)
+        {
+            var isDeleted = await _companyService.DeleteCompanyAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
 
-            return Ok(existingCompany);
+            return NoContent();
         }
     }
 }

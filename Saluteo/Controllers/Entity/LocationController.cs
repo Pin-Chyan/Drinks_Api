@@ -3,45 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class LocationController : ControllerBase
     {
-        private readonly IGenericRepository<Location> _locationRepository;
+        private readonly LocationService _locationService;
 
-        public LocationController(IGenericRepository<Location> locationRepository)
+        public LocationController(LocationService locationService)
         {
-            _locationRepository = locationRepository;
+            _locationService = locationService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Location>> GetAllLocations()
+        public async Task<ActionResult<IEnumerable<Location>>> GetAllLocations()
         {
-            var locations = _locationRepository.GetAllAsync();
+            var locations = await _locationService.GetAllLocationsAsync();
+
             return Ok(locations);
         }
 
-        [HttpPost]
-        public ActionResult CreateLocation([FromBody] LocationDto locationDto)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Location>> GetLocationById(long id)
         {
-            if (locationDto == null)
+            var location = await _locationService.GetLocationByIdAsync(id);
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(location);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Location>> CreateLocation([FromBody] LocationDto locationDto)
+        {
+            var createdLocation = await _locationService.CreateLocationAsync(locationDto);
+            if (createdLocation == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var location = new Location
+            return Ok(createdLocation);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Location>> UpdateLocation(long id, [FromBody] LocationDto updatedLocationDto)
+        {
+            var updatedLocation = await _locationService.UpdateLocationAsync(id, updatedLocationDto);
+            if (updatedLocation == null)
             {
-                Coordinate = locationDto.Coordinate,
-                Address = locationDto.Address,
-                RegionId = locationDto.RegionId,
-            };
+                return NotFound();
+            }
 
-            _locationRepository.InsertAsync(location);
+            return Ok(updatedLocation);
+        }
 
-            return Ok(location);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteLocation(long id)
+        {
+            var isDeleted = await _locationService.DeleteLocationAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

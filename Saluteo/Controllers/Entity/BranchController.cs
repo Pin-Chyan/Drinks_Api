@@ -3,19 +3,16 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
-    using Saluteo.Services;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class BranchController : ControllerBase
     {
-        private readonly IGenericRepository<Branch> _branchRepository;
         private readonly BranchService _branchService;
 
-        public BranchController(IGenericRepository<Branch> branchRepository, BranchService branchService)
+        public BranchController(BranchService branchService)
         {
-            _branchRepository = branchRepository;
             _branchService = branchService;
         }
 
@@ -64,6 +61,18 @@
             }
 
             return Ok(updatedBranch);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteBranch(long id)
+        {
+            var isDeleted = await _branchService.DeleteBranchAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

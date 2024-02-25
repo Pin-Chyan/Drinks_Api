@@ -3,44 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class PromotionBranchController : ControllerBase
     {
-        private readonly IGenericRepository<PromotionBranch> _promotionBranchRepository;
+        private readonly PromotionBranchService _promotionBranchService;
 
-        public PromotionBranchController(IGenericRepository<PromotionBranch> promotionBranchRepository)
+        public PromotionBranchController(PromotionBranchService promotionBranchService)
         {
-            _promotionBranchRepository = promotionBranchRepository;
+            _promotionBranchService = promotionBranchService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Promotion>> GetAllPromotionBranches()
+        public async Task<ActionResult<IEnumerable<PromotionBranch>>> GetAllPromotionBranches()
         {
-            var promotionsBranches = _promotionBranchRepository.GetAllAsync();
-            return Ok(promotionsBranches);
+            var promotionBranches = await _promotionBranchService.GetAllPromotionBranchesAsync();
+
+            return Ok(promotionBranches);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PromotionBranch>> GetPromotionBranchById(long id)
+        {
+            var promotionBranch = await _promotionBranchService.GetPromotionBranchByIdAsync(id);
+            if (promotionBranch == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(promotionBranch);
         }
 
         [HttpPost]
-        public ActionResult CreatePromotionBranch([FromBody] PromotionBranchDto promotionBranchDto)
+        public async Task<ActionResult<PromotionBranch>> CreatePromotionBranch([FromBody] PromotionBranchDto promotionBranchDto)
         {
-            if (promotionBranchDto == null)
+            var createdPromotionBranch = await _promotionBranchService.CreatePromotionBranchAsync(promotionBranchDto);
+            if (createdPromotionBranch == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var promotionBranch = new PromotionBranch
+            return Ok(createdPromotionBranch);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<PromotionBranch>> UpdatePromotionBranch(long id, [FromBody] PromotionBranchDto updatedPromotionBranchDto)
+        {
+            var updatedPromotionBranch = await _promotionBranchService.UpdatePromotionBranchAsync(id, updatedPromotionBranchDto);
+            if (updatedPromotionBranch == null)
             {
-                BranchId = promotionBranchDto.BranchId,
-                PromotionId = promotionBranchDto.PromotionId
-            };
+                return NotFound();
+            }
 
-            _promotionBranchRepository.InsertAsync(promotionBranch);
+            return Ok(updatedPromotionBranch);
+        }
 
-            return Ok(promotionBranch);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePromotionBranch(long id)
+        {
+            var isDeleted = await _promotionBranchService.DeletePromotionBranchAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

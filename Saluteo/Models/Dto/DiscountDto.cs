@@ -4,6 +4,6 @@
     {
         public long ValueTypeId { get; set; }
 
-        public decimal discountAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
     }
 }

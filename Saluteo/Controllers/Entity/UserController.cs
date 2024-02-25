@@ -3,46 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services;
 
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly UserService _userService;
 
-        public UserController(IGenericRepository<User> userRepository)
+        public UserController(UserService UserService)
         {
-            _userRepository = userRepository;
+            this._userService = UserService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
-            var users = _userRepository.GetAllAsync();
+            var users = await _userService.GetAllUsersAsync();
+
             return Ok(users);
         }
 
-        [HttpPost]
-        public ActionResult Createuser([FromBody] UserDto userDto)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUserById(long id)
         {
-            if (userDto == null)
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<User>> CreateUser([FromBody] UserDto userDto)
+        {
+            var createdUser = await _userService.CreateUserAsync(userDto);
+            if (createdUser == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var user = new User
+            return Ok(createdUser);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<User>> UpdateUser(long id, [FromBody] UserDto updatedUserDto)
+        {
+            var updatedUser = await _userService.UpdateUserAsync(id, updatedUserDto);
+            if (updatedUser == null)
             {
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Email = userDto.Email,
-                Password = userDto.Password
-            };
+                return NotFound();
+            }
 
-            _userRepository.InsertAsync(user);
+            return Ok(updatedUser);
+        }
 
-            return Ok(user);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(long id)
+        {
+            var isDeleted = await _userService.DeleteUserAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

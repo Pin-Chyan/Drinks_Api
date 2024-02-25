@@ -1,6 +1,5 @@
-﻿namespace Saluteo.Services
+﻿namespace Saluteo.Services.Entity
 {
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
     using Saluteo.Models.Entity;
@@ -93,6 +92,18 @@
             );
 
             return existingBranch;
+        }
+
+        public async Task<bool> DeleteBranchAsync(long id)
+        {
+            var existingBranch = await _branchRepository.GetByIdAsync(id);
+            if (existingBranch == null)
+            {
+                return false;
+            }
+
+            await _branchRepository.DeleteAsync(id);
+            return true;
         }
     }
 }

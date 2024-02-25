@@ -1,6 +1,7 @@
 using Saluteo.Repository;
 using Saluteo.Models.Entity;
 using Saluteo.Models.Enums;
+using Saluteo.Services.Entity;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,14 @@ builder.Services.AddScoped<IGenericRepository<UserBranchAccess>, GenericReposito
 
 // Services
 builder.Services.AddScoped<BranchService>();
+builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<CompanyService>();
+builder.Services.AddScoped<DiscountService>();
+builder.Services.AddScoped<LocationService>();
+//builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<PromotionBranchService>();
+builder.Services.AddScoped<PromotionClientClaimedService>();
 
 // Enums
 builder.Services.AddScoped<IGenericRepository<EnumCompanyCategory>, GenericRepository<EnumCompanyCategory>>();

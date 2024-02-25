@@ -12,11 +12,11 @@
         [Column("FkPromotionId")]
         public long PromotionId { get; set; }
 
-        public Promotion Promotion { get; set; }
+        public Promotion? Promotion { get; set; }
 
         [Column("FkClientId")]
         public long ClientId { get; set; }
 
-        public Client Client { get; set; }
+        public Client? Client { get; set; }
     }
 }

@@ -3,49 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services.Entity;
 
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IGenericRepository<Product> _productRepository;
+        private readonly ProductService _productService;
 
-        public ProductController(IGenericRepository<Product> productRepository)
+        public ProductController(ProductService productService)
         {
-            _productRepository = productRepository;
+            this._productService = productService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetAllProduct()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            var products = _productRepository.GetAllAsync();
+            var products = await _productService.GetAllProductsAsync();
+
             return Ok(products);
         }
 
-        [HttpPost]
-        public ActionResult CreateProduct([FromBody] ProductDto productDto)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProductById(long id)
         {
-            if (productDto == null)
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(product);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Product>> CreateProduct([FromBody] ProductDto productDto)
+        {
+            var createdProduct = await _productService.CreateProductAsync(productDto);
+            if (createdProduct == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var product = new Product
+            return Ok(createdProduct);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Product>> UpdateProduct(long id, [FromBody] ProductDto updatedProductDto)
+        {
+            var updatedProduct = await _productService.UpdateProductAsync(id, updatedProductDto);
+            if (updatedProduct == null)
             {
-                // Barcode validation
-                Barcode = productDto.Barcode,
-                ProductName = productDto.ProductName,
-                ProductPrice = productDto.ProductPrice,
-                ProductCategoryId = productDto.ProductCategoryId,
-                CountryId = productDto.CountryId,
-                CurrencyId = productDto.CurrencyId,
-            };
+                return NotFound();
+            }
 
-            _productRepository.InsertAsync(product);
+            return Ok(updatedProduct);
+        }
 
-            return Ok(product);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProduct(long id)
+        {
+            var isDeleted = await _productService.DeleteProductAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

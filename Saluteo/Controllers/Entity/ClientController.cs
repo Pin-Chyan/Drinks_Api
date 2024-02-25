@@ -3,50 +3,73 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Saluteo.Models.Entity;
-    using Saluteo.Repository;
+    using Saluteo.Services;
 
     [Route("api/[controller]")]
     [ApiController]
     public class ClientController : ControllerBase
     {
-        private readonly IGenericRepository<Client> _clientRepository;
+        private readonly ClientService _clientService;
 
-        public ClientController(IGenericRepository<Client> clientRepository)
+        public ClientController(ClientService ClientService)
         {
-            _clientRepository = clientRepository;
+            this._clientService = ClientService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Client>> GetAllClients()
+        public async Task<ActionResult<IEnumerable<Client>>> GetAllClients()
         {
-            var clients = _clientRepository.GetAllAsync();
+            var clients = await _clientService.GetAllClientsAsync();
 
             return Ok(clients);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Client>> GetClientById(long id)
+        {
+            var client = await _clientService.GetClientByIdAsync(id);
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
+        }
 
         [HttpPost]
-        public ActionResult CreateClient([FromBody] ClientDto clientDto)
+        public async Task<ActionResult<Client>> CreateClient([FromBody] ClientDto clientDto)
         {
-            if (clientDto == null)
+            var createdClient = await _clientService.CreateClientAsync(clientDto);
+            if (createdClient == null)
             {
                 return BadRequest("Invalid data");
             }
 
-            // Mapper :/
-            var client = new Client
+            return Ok(createdClient);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Client>> UpdateClient(long id, [FromBody] ClientDto updatedClientDto)
+        {
+            var updatedClient = await _clientService.UpdateClientAsync(id, updatedClientDto);
+            if (updatedClient == null)
             {
-                IdNumber = clientDto.IdNumber,
-                FirstName = clientDto.FirstName,
-                LastName = clientDto.LastName,
-                DateOfBirth = clientDto.DateOfBirth,
-                Email = clientDto.Email,
-                Password = clientDto.Password
-            };
+                return NotFound();
+            }
 
-            _clientRepository.InsertAsync(client);
+            return Ok(updatedClient);
+        }
 
-            return Ok(client);
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteClient(long id)
+        {
+            var isDeleted = await _clientService.DeleteClientAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

@@ -3,13 +3,13 @@
     public class PromotionPeriodDto
     {
         // Represents a SQL DATE column
-        public DateTime startDate { get; set; }
+        public DateTime StartDate { get; set; }
 
-        public DateTime endDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         // Represents a SQL TIME column
-        public TimeSpan? startTime { get; set; }
+        public TimeSpan? StartTime { get; set; }
 
-        public TimeSpan? endTime { get; set; }
+        public TimeSpan? EndTime { get; set; }
     }
 }
